@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分数查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>分数查询</h1>
+    <input type="text" id="nameInput" placeholder="请输入姓名">
+    <input type="text" id="studentIdInput" placeholder="请输入学号">
+    <button onclick="searchByUsername()">查询</button>
+    <div id="result"></div>
+
+    <script>
+        // 学号到姓名的映射
+        const studentIdNameMap = {
+            "1": "王皓轩",
+            "2": "吴承威",
+            "3": "周骏宇",
+            "4": "谢文博",
+            "5": "许安易",
+            "6": "李江睿",
+            "7": "颜小宁",
+            "8": "闵书琳",
+            "9": "骆安妮",
+            "10": "万辰安悦",
+            "11": "黄恩赐",
+            "12": "范晓童",
+            "13": "舒子乔",
+            "14": "葛静恩",
+            "15": "宋瑞辰",
+            "16": "刘芊璐",
+            "17": "房致礼",
+            "18": "陈聚桐",
+            "19": "董家瑞",
+            "20": "尹思远",
+            "21": "贾琰柽",
+            "22": "孙怿然",
+            "23": "王梓宸",
+            "24": "徐立昂",
+            "25": "张高睿熙",
+            "26": "唐翊轩",
+            "27": "李国娇",
+            "28": "闫宸语",
+            "29": "葛立凡",
+            "30": "陈嘉彤",
+            "31": "李羽琪",
+            "32": "董云天",
+            "33": "张释予",
+            "34": "支馨怡",
+            "35": "金羽彤",
+            "36": "戴辰茜",
+            "37": "潘毅择",
+            "38": "房承仪",
+            "39": "李雅雯",
+            "40": "李欣雯",
+            "41": "黄睿谦",
+            "42": "夏铮清",
+            "43": "江芊语",
+            "44": "化泽熙",
+            "45": "童泽川",
+            "46": "汪桐宇"
+        };
+
+        // 名字到密码的映射
+        const namePasswordMap = {
+            "王皓轩": "u738bu7693u8f69",
+            "吴承威": "u5434u627fu5a01",
+            "周骏宇": "u5468u9a8fu5b87",
+            "谢文博": "u8c22u6587u535a",
+            "许安易": "u8bb8u5b89u6613",
+            "李江睿": "u674eu6c5fu777f",
+            "颜小宁": "u989cu5c0fu5b81",
+            "闵书琳": "u95f5u4e66u7433",
+            "骆安妮": "u9a86u5b89u59ae",
+            "万辰安悦": "u4e07u8fb0u5b89u60a6",
+            "黄恩赐": "u9ec4u6069u8d50",
+            "范晓童": "u8303u6653u7ae5",
+            "舒子乔": "u8212u5b50u4e54",
+            "葛静恩": "u845bu9759u6069",
+            "宋瑞辰": "u5b8bu745eu8fb0",
+            "刘芊璐": "u5218u828au7490",
+            "房致礼": "u623fu81f4u793c",
+            "陈聚桐": "u9648u805au6850",
+            "董家瑞": "u8463u5bb6u745e",
+            "尹思远": "u5c39u601du8fdc",
+            "贾琰柽": "u8d3eu7430u67fd",
+            "孙怿然": "u5b59u603fu7136",
+            "王梓宸": "u738bu6893u5bb8",
+            "徐立昂": "u5f90u7acbu6602",
+            "张高睿熙": "u5f20u9ad8u777fu7199",
+            "唐翊轩": "u5510u7fcau8f69",
+            "李国娇": "u674eu56fdu5a07",
+            "闫宸语": "u95ebu5bb8u8bed",
+            "葛立凡": "u845bu7acbu51e1",
+            "陈嘉彤": "u9648u5609u5f64",
+            "李羽琪": "u674eu7fbdu742a",
+            "董云天": "u8463u4e91u5929",
+            "张释予": "u5f20u91cau4e88",
+            "支馨怡": "u652fu99a8u6021",
+            "金羽彤": "u91d1u7fbdu5f64",
+            "戴辰茜": "u6234u8fb0u831c",
+            "潘毅择": "u6f58u6bc5u62e9",
+            "房承仪": "u623fu627fu4eea",
+            "李雅雯": "u674eu96c5u96ef",
+            "李欣雯": "u674eu6b23u96ef",
+            "黄睿谦": "u9ec4u777fu8c26",
+            "夏铮清": "u590fu94eeu6e05",
+            "江芊语": "u6c5fu828au8bed",
+            "化泽熙": "u5316u6cfdu7199",
+            "童泽川": "u7ae5u6cfdu5ddd",
+            "汪桐宇": "u6c6au6850u5b87"
+        };
+
+        // 密码和分数映射对象移至单独文件更安全，此处仅为演示
+        const passwordScoreMap = {
+            "u8c22u6587u535a": 50, "u8bb8u5b89u6613": 50, "u674eu6c5fu777f": 50, "u95f5u4e66u7433": 50, "u4e07u8fb0u5b89u60a6": 50, "u9ec4u6069u8d50": 50, "u8303u6653u7ae5": 50, "u8212u5b50u4e54": 50, "u845bu9759u6069": 50, "u623fu81f4u793c": 50, "u5c39u601du8fdc": 50, "u5b59u603fu7136": 50, "u5f90u7acbu6602": 50, "u95ebu5bb8u8bed": 50, "u9648u5609u5f64": 50, "u674eu7fbdu742a": 50, "u91d1u7fbdu5f64": 50, "u6234u8fb0u831c": 50, "u6f58u6bc5u62e9": 50, "u623fu627fu4eea": 50, "u674eu6b23u96ef": 50, "u9ec4u777fu8c26": 50, "u6c5fu828au8bed": 50, "u5316u6cfdu7199": 50, "u6c6au6850u5b87": 50, "u5434u627fu5a01": 49, "u989cu5c0fu5b81": 49, "u5b8bu745eu8fb0": 49, "u9648u805au6850": 49, "u738bu6893u5bb8": 49, "u8463u4e91u5929": 49, "u9a86u5b89u59ae": 48, "u5218u828au7490": 48, "u5f20u91cau4e88": 48, "u590fu94eeu6e05": 48, "u652fu99a8u6021": 47, "u8463u5bb6u745e": 46, "u5510u7fcau8f69": 46, "u845bu7acbu51e1": 46, "u7ae5u6cfdu5ddd": 45, "u674eu96c5u96ef": 44, "u8d3eu7430u67fd": 43, "u674eu56fdu5a07": 42, "u5f20u9ad8u777fu7199": 41, "u738bu7693u8f69": 40, "u5468u9a8fu5b87": 24
+        };
+
+        function searchByUsername() {
+            const name = document.getElementById('nameInput').value;
+            const studentId = document.getElementById('studentIdInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (studentIdNameMap[studentId] && studentIdNameMap[studentId] === name) {
+                const password = namePasswordMap[name];
+                if (password && passwordScoreMap[password] !== undefined) {
+                    resultDiv.innerHTML = `${name} 的科学成绩是${passwordScoreMap[password]}`;
+                } else {
+                    resultDiv.innerHTML = `${name} 未找到对应的科学成绩。`;
+                }
+            } else {
+                resultDiv.innerHTML = '学号和姓名不匹配，请检查输入是否正确。';
+            }
+        }
+    </script>
+</body>
+</html>
